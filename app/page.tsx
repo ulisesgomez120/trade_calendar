@@ -2,7 +2,6 @@
 import { Suspense } from "react";
 import Header from "./components/Header";
 import MonthlyCalendar from "./components/MonthlyCalendar";
-import WeeklySummary from "./components/WeeklySummary";
 import ChatButton from "./components/ChatButton";
 import { fetchSheetData } from "./lib/fetchSheetData";
 import { processTradeData } from "./lib/processTradeData";
@@ -25,12 +24,9 @@ export default async function Home() {
   return (
     <main className='container mx-auto p-4'>
       <Header data={headerData} />
-      <div className='flex flex-col md:flex-row gap-4 mt-4'>
-        <Suspense fallback={<div>Loading calendar...</div>}>
+      <div className='mt-4'>
+        <Suspense fallback={<div>Loading...</div>}>
           <MonthlyCalendar data={processedData} />
-        </Suspense>
-        <Suspense fallback={<div>Loading summary...</div>}>
-          <WeeklySummary data={processedData} />
         </Suspense>
       </div>
       <ChatButton />

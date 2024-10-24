@@ -10,12 +10,18 @@ export interface WeeklyData {
   days: number;
 }
 
+export interface MonthlyData {
+  profit: number;
+  trades: number;
+  weeklyData: WeeklyData[];
+}
+
 export interface ProcessedTradeData {
   tradeWinPercentage: number;
   profitFactor: number;
   dayWinPercentage: number;
   dailyData: { [key: string]: DailyData };
-  weeklyData: WeeklyData[];
+  monthlyData: { [key: string]: MonthlyData };
 }
 
 export interface TradeData {
