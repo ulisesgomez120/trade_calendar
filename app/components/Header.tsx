@@ -1,15 +1,14 @@
 // app/components/Header.tsx
+"use client";
+
 import { Card } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { InfoIcon } from "lucide-react";
 import MetricCard from "./MetricCard";
+import { ProcessedTradeData } from "../types";
 
 interface HeaderProps {
-  data: {
-    tradeWinPercentage: number;
-    profitFactor: number;
-    dayWinPercentage: number;
-  };
+  data: ProcessedTradeData;
 }
 
 export default function Header({ data }: HeaderProps) {
@@ -20,17 +19,16 @@ export default function Header({ data }: HeaderProps) {
         value={data.tradeWinPercentage}
         type='percentage'
         info={
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <InfoIcon className='h-4 w-4 ml-1' />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Percentage of trades that result in a profit</p>
-                <p>Formula: (Winning Trades / Total Trades) * 100</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon className='h-4 w-4 ml-2 text-gray-500 hover:text-gray-700 cursor-pointer' />
+            </PopoverTrigger>
+            <PopoverContent className='w-80'>
+              <p className='font-semibold'>Trade Win Percentage</p>
+              <p className='mt-2'>The percentage of trades that resulted in a profit.</p>
+              <p className='mt-2'>Formula: (Number of Winning Trades / Total Number of Trades) * 100</p>
+            </PopoverContent>
+          </Popover>
         }
       />
       <MetricCard
@@ -38,18 +36,17 @@ export default function Header({ data }: HeaderProps) {
         value={data.profitFactor}
         type='number'
         info={
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <InfoIcon className='h-4 w-4 ml-1' />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Ratio of gross profit to gross loss</p>
-                <p>Formula: Gross Profit / Gross Loss</p>
-                <p>A value greater than 1 indicates overall profitability</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon className='h-4 w-4 ml-2 text-gray-500 hover:text-gray-700 cursor-pointer' />
+            </PopoverTrigger>
+            <PopoverContent className='w-80'>
+              <p className='font-semibold'>Profit Factor</p>
+              <p className='mt-2'>The ratio of gross profit to gross loss.</p>
+              <p className='mt-2'>Formula: Total Gross Profit / Total Gross Loss</p>
+              <p className='mt-2'>A value greater than 1 indicates overall profitability.</p>
+            </PopoverContent>
+          </Popover>
         }
       />
       <MetricCard
@@ -57,17 +54,16 @@ export default function Header({ data }: HeaderProps) {
         value={data.dayWinPercentage}
         type='percentage'
         info={
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <InfoIcon className='h-4 w-4 ml-1' />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Percentage of days with a net profit</p>
-                <p>Formula: (Profitable Days / Total Trading Days) * 100</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Popover>
+            <PopoverTrigger>
+              <InfoIcon className='h-4 w-4 ml-2 text-gray-500 hover:text-gray-700 cursor-pointer' />
+            </PopoverTrigger>
+            <PopoverContent className='w-80'>
+              <p className='font-semibold'>Day Win Percentage</p>
+              <p className='mt-2'>The percentage of trading days that ended with a net profit.</p>
+              <p className='mt-2'>Formula: (Number of Profitable Days / Total Number of Trading Days) * 100</p>
+            </PopoverContent>
+          </Popover>
         }
       />
     </div>

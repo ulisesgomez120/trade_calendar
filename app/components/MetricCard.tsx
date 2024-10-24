@@ -16,7 +16,7 @@ export default function MetricCard({ title, value, type, info }: MetricCardProps
 
   return (
     <Card className='p-4'>
-      <div className='flex items-center mb-2'>
+      <div className='flex items-center justify-between mb-2'>
         <h2 className='text-lg font-semibold'>{title}</h2>
         {info}
       </div>
