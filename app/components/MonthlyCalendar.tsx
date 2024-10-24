@@ -71,10 +71,27 @@ export default function MonthlyCalendar({ data }: MonthlyCalendarProps) {
   const currentMonthData = data.monthlyData[currentMonthKey] || { profit: 0, trades: 0, weeklyData: [] };
 
   const getWeekNumber = (day: number) => {
-    return Math.floor((day + firstDayOfMonth - 1) / 7);
+    const date = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   };
 
-  const weeklyData = currentMonthData.weeklyData;
+  const weeklyData = useMemo(() => {
+    const weeks: { [key: number]: WeeklyData } = {};
+    Object.entries(data.dailyData).forEach(([dateKey, dailyData]) => {
+      const [year, month, day] = dateKey.split("-").map(Number);
+      if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() + 1) {
+        const weekNumber = getWeekNumber(day);
+        if (!weeks[weekNumber]) {
+          weeks[weekNumber] = { profit: 0, trades: 0 };
+        }
+        weeks[weekNumber].profit += dailyData.profit;
+        weeks[weekNumber].trades += dailyData.trades;
+      }
+    });
+    return weeks;
+  }, [data.dailyData, selectedDate]);
 
   return (
     <Card className='p-4 flex-grow'>
@@ -102,16 +119,22 @@ export default function MonthlyCalendar({ data }: MonthlyCalendarProps) {
           </Button>
           <Button onClick={goToCurrentMonth}>Current Month</Button>
         </div>
-        <div className='text-lg font-bold'>Monthly P/L: ${formatProfit(currentMonthData.profit)}</div>
+        <div className='text-lg'>
+          Monthly P/L:{" "}
+          <span className={`font-bold ${currentMonthData.profit > 0 ? "text-green-600" : "text-red-600"}`}>
+            ${formatProfit(currentMonthData.profit)}
+          </span>
+        </div>
       </div>
-      <div className='grid grid-cols-8 gap-1'>
+      <hr className='my-5' />
+      <div className='grid grid-cols-8 gap-2'>
         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Weekly"].map((day) => (
           <div key={day} className='text-center font-medium'>
             {day}
           </div>
         ))}
         {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-          <div key={`empty-${index}`} className='h-20'></div>
+          <div key={`empty-${index}`} className='h-24 rounded-md'></div>
         ))}
         {calendarDays.map((day) => {
           const dateKey = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(
@@ -122,21 +145,23 @@ export default function MonthlyCalendar({ data }: MonthlyCalendarProps) {
           const weekNumber = getWeekNumber(day);
           return (
             <React.Fragment key={day}>
-              <div className={`h-20 flex flex-col items-center justify-start p-1 ${getDayClass(day)}`}>
+              <div className={`h-24 flex flex-col items-center justify-start p-2 rounded-md ${getDayClass(day)}`}>
                 <span className='text-sm font-medium'>{day}</span>
                 {dailyData && (
-                  <span className={`text-xs ${dailyData.profit > 0 ? "text-green-600" : "text-red-600"}`}>
+                  <span className={`text-sm font-bold ${dailyData.profit > 0 ? "text-green-600" : "text-red-600"}`}>
                     ${formatProfit(dailyData.profit)}
                   </span>
                 )}
               </div>
               {(day + firstDayOfMonth) % 7 === 0 && (
-                <div className='h-20 flex flex-col items-center justify-center bg-gray-200'>
-                  <span className='text-sm font-medium'>Week {weekNumber + 1}</span>
+                <div className='h-24 flex flex-col items-center justify-center bg-gray-200 rounded-md'>
+                  <span className='text-sm font-medium'>Week {weekNumber}</span>
                   {weeklyData[weekNumber] && (
                     <>
                       <span
-                        className={`text-xs ${weeklyData[weekNumber].profit > 0 ? "text-green-600" : "text-red-600"}`}>
+                        className={`text-sm font-bold ${
+                          weeklyData[weekNumber].profit > 0 ? "text-green-600" : "text-red-600"
+                        }`}>
                         ${formatProfit(weeklyData[weekNumber].profit)}
                       </span>
                       <span className='text-xs'>{weeklyData[weekNumber].trades} trades</span>
@@ -149,7 +174,7 @@ export default function MonthlyCalendar({ data }: MonthlyCalendarProps) {
         })}
         {/* Fill in any remaining cells in the last row */}
         {Array.from({ length: (8 - ((daysInMonth + firstDayOfMonth) % 8)) % 8 }).map((_, index) => (
-          <div key={`end-empty-${index}`} className='h-20'></div>
+          <div key={`end-empty-${index}`} className='h-24 rounded-md'></div>
         ))}
       </div>
     </Card>
