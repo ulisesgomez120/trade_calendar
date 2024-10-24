@@ -2,7 +2,6 @@
 import { Suspense } from "react";
 import Header from "./components/Header";
 import MonthlyCalendar from "./components/MonthlyCalendar";
-import ChatButton from "./components/ChatButton";
 import { fetchSheetData } from "./lib/fetchSheetData";
 import { processTradeData } from "./lib/processTradeData";
 
@@ -29,7 +28,6 @@ export default async function Home() {
           <MonthlyCalendar data={processedData} />
         </Suspense>
       </div>
-      <ChatButton />
     </main>
   );
 }
